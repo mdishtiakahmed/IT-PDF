@@ -1,0 +1,41 @@
+package com.itpdf.app.ui.screens
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsScreen(onBack: () -> Unit) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Settings") },
+                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, "Back") } }
+            )
+        }
+    ) { padding ->
+        Column(modifier = Modifier.padding(padding).padding(16.dp)) {
+            Text("General", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+            Spacer(Modifier.height(16.dp))
+            ListItem(
+                headlineContent = { Text("App Version") },
+                supportingContent = { Text("1.0.0") }
+            )
+            Divider()
+            ListItem(
+                headlineContent = { Text("Privacy Policy") },
+                modifier = Modifier.clickable { /* Open Web Link */ }
+            )
+            Divider()
+            ListItem(
+                headlineContent = { Text("Terms of Service") },
+                modifier = Modifier.clickable { /* Open Web Link */ }
+            )
+        }
+    }
+}
