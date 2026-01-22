@@ -52,7 +52,7 @@ android {
 
     composeOptions {
         // Kotlin ভার্সনের সাথে কম্পোজ কম্পাইলারের মিল থাকতে হয়
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.5"
     }
 
     packaging {
