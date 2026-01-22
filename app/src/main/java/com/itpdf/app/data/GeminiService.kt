@@ -9,7 +9,7 @@ object GeminiService {
     private const val API_KEY = "AIzaSyClB3oy5L_gkjJI0s6_ky12QjDBrnPcCmY" 
     
     private val model = GenerativeModel(
-        modelName = "gemini-pro",
+        modelName = "gemini-2.5-flash",
         apiKey = API_KEY
     )
 
