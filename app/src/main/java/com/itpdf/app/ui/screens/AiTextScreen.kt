@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,7 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.itpdf.app.data.GeminiService
+import com.google.ai.client.generativeai.GenerativeModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -25,8 +26,20 @@ fun AiTextScreen(onBack: () -> Unit) {
     var prompt by remember { mutableStateOf("") }
     var result by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
+    
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    // আপনার দেওয়া API Key টি এখানে বসানো হয়েছে
+    val apiKey = "AIzaSyAg8971YAPbeIOjMbkZj5-lv81PD-H8pyE"
+
+    // মডেল ইনিশিয়ালাইজ করা
+    val generativeModel = remember {
+        GenerativeModel(
+            modelName = "gemini-1.5-flash",
+            apiKey = apiKey
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -58,24 +71,37 @@ fun AiTextScreen(onBack: () -> Unit) {
                     if (prompt.isNotBlank()) {
                         isLoading = true
                         scope.launch {
-                            val response = GeminiService.generateText(prompt)
-                            isLoading = false
-                            response.onSuccess { result = it }
-                            response.onFailure { 
-                                Toast.makeText(context, "Error: ${it.message}", Toast.LENGTH_SHORT).show() 
+                            try {
+                                // সরাসরি API কল করা হচ্ছে
+                                val response = generativeModel.generateContent(prompt)
+                                result = response.text ?: "No response found."
+                                isLoading = false
+                            } catch (e: Exception) {
+                                isLoading = false
+                                result = ""
+                                Toast.makeText(context, "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
                             }
                         }
+                    } else {
+                        Toast.makeText(context, "Please write something first", Toast.LENGTH_SHORT).show()
                     }
                 },
                 enabled = !isLoading,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                if (isLoading) CircularProgressIndicator(modifier = Modifier.size(20.dp), color = MaterialTheme.colorScheme.onPrimary)
-                else Text("Generate")
+                if (isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp), color = MaterialTheme.colorScheme.onPrimary)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Generating...")
+                } else {
+                    Icon(Icons.Default.AutoAwesome, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Generate")
+                }
             }
 
             if (result.isNotEmpty()) {
-                Divider()
+                HorizontalDivider()
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
