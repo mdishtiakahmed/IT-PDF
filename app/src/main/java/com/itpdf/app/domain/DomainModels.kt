@@ -3,7 +3,7 @@ package com.itpdf.app.domain
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 
-// এই ক্লাসগুলো আপনার এডিটর এলিমেন্ট ডিফাইন করে
+// ১. এডিটর এলিমেন্টের প্যারেন্ট ক্লাস
 sealed class EditorElement {
     abstract val id: Long
     abstract val x: Float
@@ -11,6 +11,7 @@ sealed class EditorElement {
     abstract val zIndex: Int
 }
 
+// ২. টেক্সট এলিমেন্ট
 data class TextElement(
     override val id: Long,
     override val x: Float,
@@ -23,6 +24,7 @@ data class TextElement(
     val isItalic: Boolean = false
 ) : EditorElement()
 
+// ৩. ইমেজ এলিমেন্ট
 data class ImageElement(
     override val id: Long,
     override val x: Float,
@@ -34,8 +36,9 @@ data class ImageElement(
     val rotation: Float = 0f
 ) : EditorElement()
 
+// ৪. পেজ সেটিংস (A4 সাইজ ডিফল্ট)
 data class PageSettings(
     val backgroundColor: Long = Color.White.toArgb().toLong(),
-    val pageWidth: Int = 595, // A4 সাইজ (Width)
-    val pageHeight: Int = 842 // A4 সাইজ (Height)
+    val pageWidth: Int = 595, 
+    val pageHeight: Int = 842 
 )
