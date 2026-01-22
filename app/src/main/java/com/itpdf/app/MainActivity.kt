@@ -1,16 +1,14 @@
 package com.itpdf.app
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.itpdf.app.navigation.Screen
 import com.itpdf.app.ui.screens.*
 import com.itpdf.app.ui.theme.ITPDFTheme
 
@@ -19,53 +17,63 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ITPDFTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    ITPdfApp()
-                }
+                // অ্যাপের নেভিগেশন সিস্টেম চালু করা হলো
+                AppNavigation()
             }
         }
     }
 }
 
-@androidx.compose.runtime.Composable
-fun ITPdfApp() {
+@Composable
+fun AppNavigation() {
     val navController = rememberNavController()
-    
-    NavHost(navController = navController, startDestination = Screen.Home.route) {
-        composable(Screen.Home.route) { 
+    val context = LocalContext.current
+
+    NavHost(navController = navController, startDestination = "home") {
+
+        // ১. হোম স্ক্রিন (Home Screen)
+        composable("home") {
             HomeScreen(
-                onNavigateToTools = { navController.navigate(Screen.Tools.route) },
-                onNavigateToEditor = { navController.navigate(Screen.Editor.route) },
-                onNavigateToCv = { navController.navigate(Screen.CvBuilder.route) },
-                onNavigateToMyPdfs = { navController.navigate(Screen.MyPdfs.route) },
-                onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
-                onNavigateToPro = { navController.navigate(Screen.ProUpgrade.route) },
-                onNavigateToAi = { navController.navigate(Screen.AiText.route) }
-            ) 
+                onNavigateToTools = { navController.navigate("tools") },
+                onNavigateToEditor = { navController.navigate("editor") },
+                onNavigateToCv = { 
+                     // CV ফিচারটি পরে যোগ করা হবে, আপাতত টোস্ট দেখানো হচ্ছে
+                     Toast.makeText(context, "CV Maker Coming Soon!", Toast.LENGTH_SHORT).show()
+                },
+                onNavigateToMyPdfs = { navController.navigate("files") },
+                onNavigateToSettings = { navController.navigate("settings") },
+                onNavigateToPro = { 
+                     Toast.makeText(context, "Premium Feature!", Toast.LENGTH_SHORT).show() 
+                },
+                onNavigateToAi = { 
+                     Toast.makeText(context, "AI Generator Coming Soon!", Toast.LENGTH_SHORT).show() 
+                }
+            )
         }
-        composable(Screen.Tools.route) { 
-            ToolsScreen(onBack = { navController.popBackStack() }) 
+
+        // ২. টুলস স্ক্রিন (Tools Screen)
+        composable("tools") {
+            // আপনার ToolsScreen এ যদি প্যারামিটার ভিন্ন থাকে তবে জানাবেন
+            ToolsScreen(
+                onBack = { navController.popBackStack() } 
+            )
         }
-        composable(Screen.Editor.route) { 
-            EditorScreen(onBack = { navController.popBackStack() }) 
+
+        // ৩. ফাইলস স্ক্রিন (My Files Screen)
+        composable("files") {
+            MyFilesScreen(
+                onBack = { navController.popBackStack() }
+            )
         }
-        composable(Screen.CvBuilder.route) { 
-            CvBuilderScreen(onBack = { navController.popBackStack() }) 
+
+        // ৪. এডিটর স্ক্রিন (Editor Screen)
+        composable("editor") {
+            EditorScreen(onBack = { navController.popBackStack() })
         }
-        composable(Screen.AiText.route) {
-            AiTextScreen(onBack = { navController.popBackStack() })
-        }
-        composable(Screen.MyPdfs.route) {
-            MyPdfsScreen(onBack = { navController.popBackStack() })
-        }
-        composable(Screen.Settings.route) {
+
+        // ৫. সেটিংস স্ক্রিন (Settings Screen)
+        composable("settings") {
             SettingsScreen(onBack = { navController.popBackStack() })
-        }
-        composable(Screen.ProUpgrade.route) {
-            ProUpgradeScreen(onBack = { navController.popBackStack() })
         }
     }
 }
