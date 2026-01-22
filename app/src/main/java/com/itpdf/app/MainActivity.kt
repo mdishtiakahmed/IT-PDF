@@ -9,7 +9,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.itpdf.app.ui.screens.*
+import com.itpdf.app.ui.screens.* // আপনার সব স্ক্রিন এখানে ইমপোর্ট করা আছে
 import com.itpdf.app.ui.theme.ITPDFTheme
 
 class MainActivity : ComponentActivity() {
@@ -45,15 +45,15 @@ fun AppNavigation() {
                 onNavigateToPro = { 
                      Toast.makeText(context, "Premium Feature!", Toast.LENGTH_SHORT).show() 
                 },
+                // আগে এখানে টোস্ট ছিল, এখন এটি "ai_text" রুটে নিয়ে যাবে
                 onNavigateToAi = { 
-                     Toast.makeText(context, "AI Generator Coming Soon!", Toast.LENGTH_SHORT).show() 
+                     navController.navigate("ai_text") 
                 }
             )
         }
 
         // ২. টুলস স্ক্রিন (Tools Screen)
         composable("tools") {
-            // আপনার ToolsScreen এ যদি প্যারামিটার ভিন্ন থাকে তবে জানাবেন
             ToolsScreen(
                 onBack = { navController.popBackStack() } 
             )
@@ -74,6 +74,12 @@ fun AppNavigation() {
         // ৫. সেটিংস স্ক্রিন (Settings Screen)
         composable("settings") {
             SettingsScreen(onBack = { navController.popBackStack() })
+        }
+        
+        // ৬. এআই টেক্সট স্ক্রিন (AI Text Screen) - নতুন যোগ করা হয়েছে
+        composable("ai_text") {
+            // আপনার ফাইলের নাম যদি AiTextScreen হয়, তাহলে ফাংশনটির নামও AiTextScreen হওয়ার কথা
+            AiTextScreen(onBack = { navController.popBackStack() })
         }
     }
 }
