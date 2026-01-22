@@ -1,5 +1,6 @@
 package com.itpdf.app.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -26,12 +27,12 @@ fun SettingsScreen(onBack: () -> Unit) {
                 headlineContent = { Text("App Version") },
                 supportingContent = { Text("1.0.0") }
             )
-            Divider()
+            HorizontalDivider() // Material 3 তে Divider এর বদলে HorizontalDivider ব্যবহার করা ভালো
             ListItem(
                 headlineContent = { Text("Privacy Policy") },
                 modifier = Modifier.clickable { /* Open Web Link */ }
             )
-            Divider()
+            HorizontalDivider()
             ListItem(
                 headlineContent = { Text("Terms of Service") },
                 modifier = Modifier.clickable { /* Open Web Link */ }
