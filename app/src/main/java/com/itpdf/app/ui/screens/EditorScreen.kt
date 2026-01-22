@@ -8,8 +8,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -40,7 +41,9 @@ fun EditorScreen(onBack: () -> Unit) {
     var pageSettings by remember { mutableStateOf(PageSettings()) }
     
     val context = LocalContext.current
-    valscope = rememberCoroutineScope()
+    
+    // ফিক্স করা হয়েছে: valscope -> val scope
+    val scope = rememberCoroutineScope() 
     var isGenerating by remember { mutableStateOf(false) }
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -65,8 +68,9 @@ fun EditorScreen(onBack: () -> Unit) {
                 navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, "Back") } },
                 actions = {
                     IconButton(onClick = {
-                        valscope.launch {
+                        scope.launch {
                             isGenerating = true
+                            // PdfGenerator ক্লাসটি আপনার domain প্যাকেজে থাকতে হবে
                             val file = PdfGenerator.createPdf(context, "IT_PDF_${System.currentTimeMillis()}", elements, pageSettings)
                             isGenerating = false
                             Toast.makeText(context, if(file != null) "Saved to Documents/IT_PDF" else "Error saving", Toast.LENGTH_LONG).show()
@@ -155,7 +159,9 @@ fun EditorPropertiesBar(
 ) {
     Surface(tonalElevation = 8.dp, modifier = Modifier.fillMaxWidth()) {
         Row(
-            modifier = Modifier.padding(8.dp).horizontalScroll(rememberScrollState()),
+            modifier = Modifier
+                .padding(8.dp)
+                .horizontalScroll(rememberScrollState()), // Scroll state যোগ করা হয়েছে
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
