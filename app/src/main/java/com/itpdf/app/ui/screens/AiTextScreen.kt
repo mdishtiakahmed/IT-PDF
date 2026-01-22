@@ -1,9 +1,9 @@
 package com.itpdf.app.ui.screens
 
-import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -15,37 +15,38 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.google.ai.client.generativeai.GenerativeModel
+import androidx.compose.ui.unit.sp
+import com.itpdf.app.domain.GeminiHelper // নিশ্চিত করুন এই ইমপোর্টটি ঠিক আছে
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AiTextScreen(onBack: () -> Unit) {
+    // স্টেট ভেরিয়েবল (State Variables)
     var prompt by remember { mutableStateOf("") }
     var result by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-
-    // আপনার দেওয়া API Key টি এখানে বসানো হয়েছে
-    val apiKey = "AIzaSyAg8971YAPbeIOjMbkZj5-lv81PD-H8pyE"
-
-    // মডেল ইনিশিয়ালাইজ করা
-    val generativeModel = remember {
-        GenerativeModel(
-            modelName = "gemini-1.5-flash",
-            apiKey = apiKey
-        )
-    }
+    val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("AI Writer") },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, "Back") } }
+                title = { Text("AI Assistant") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, "Back") }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF1E1E1E),
+                    titleContentColor = Color.White,
+                    navigationIconContentColor = Color.White
+                )
             )
         }
     ) { padding ->
@@ -53,77 +54,84 @@ fun AiTextScreen(onBack: () -> Unit) {
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(16.dp)
+                .verticalScroll(scrollState)
         ) {
-            Text("What should I write for you?", style = MaterialTheme.typography.titleMedium)
-            
+            // ১. ইনপুট বক্স
             OutlinedTextField(
                 value = prompt,
                 onValueChange = { prompt = it },
-                label = { Text("Enter topic (e.g., Leave application, Cover letter)") },
-                modifier = Modifier.fillMaxWidth().height(120.dp),
-                maxLines = 5
+                label = { Text("Ask anything (CV, Email, Letters)...") },
+                placeholder = { Text("Example: Write a cover letter for IT job") },
+                modifier = Modifier.fillMaxWidth().height(150.dp),
+                maxLines = 10
             )
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // ২. জেনারেট বাটন (Gemini কল করা হচ্ছে)
             Button(
                 onClick = {
-                    if (prompt.isNotBlank()) {
+                    if (prompt.isNotEmpty()) {
                         isLoading = true
+                        // কীবোর্ড হাইড করার জন্য
+                        // (ঐচ্ছিক, কোড জটিল না করার জন্য বাদ দেওয়া হলো)
+                        
                         scope.launch {
-                            try {
-                                // সরাসরি API কল করা হচ্ছে
-                                val response = generativeModel.generateContent(prompt)
-                                result = response.text ?: "No response found."
-                                isLoading = false
-                            } catch (e: Exception) {
-                                isLoading = false
-                                result = ""
-                                Toast.makeText(context, "Error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
-                            }
+                            // GeminiHelper কল করা হচ্ছে
+                            result = GeminiHelper.generateContent(prompt)
+                            isLoading = false
                         }
                     } else {
-                        Toast.makeText(context, "Please write something first", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Please write something first!", Toast.LENGTH_SHORT).show()
                     }
                 },
+                modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoading,
-                modifier = Modifier.fillMaxWidth()
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
                 if (isLoading) {
-                    CircularProgressIndicator(modifier = Modifier.size(20.dp), color = MaterialTheme.colorScheme.onPrimary)
+                    CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Generating...")
+                    Text("Thinking...")
                 } else {
-                    Icon(Icons.Default.AutoAwesome, contentDescription = null)
+                    Icon(Icons.Default.AutoAwesome, null)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Generate")
+                    Text("Generate with AI")
                 }
             }
 
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // ৩. রেজাল্ট দেখানো (যদি রেজাল্ট থাকে)
             if (result.isNotEmpty()) {
-                HorizontalDivider()
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Result:", style = MaterialTheme.typography.titleMedium)
-                    IconButton(onClick = {
-                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                        val clip = ClipData.newPlainText("AI Result", result)
-                        clipboard.setPrimaryClip(clip)
-                        Toast.makeText(context, "Copied", Toast.LENGTH_SHORT).show()
-                    }) {
-                        Icon(Icons.Default.ContentCopy, "Copy")
-                    }
-                }
-                
                 Card(
-                    modifier = Modifier.fillMaxWidth().weight(1f),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Box(modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState())) {
-                        Text(result)
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text("Answer:", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                            
+                            // কপি বাটন
+                            IconButton(onClick = {
+                                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                val clip = android.content.ClipData.newPlainText("AI Result", result)
+                                clipboard.setPrimaryClip(clip)
+                                Toast.makeText(context, "Copied to clipboard!", Toast.LENGTH_SHORT).show()
+                            }) {
+                                Icon(Icons.Default.ContentCopy, "Copy")
+                            }
+                        }
+                        HorizontalDivider()
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        // আসল উত্তর
+                        Text(result, fontSize = 16.sp, lineHeight = 24.sp)
                     }
                 }
             }
