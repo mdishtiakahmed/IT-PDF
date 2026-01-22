@@ -91,8 +91,7 @@ dependencies {
 
     /* -------- Gemini AI -------- */
     // ০.২.০ অনেক পুরনো এবং এতে অনেক বাগ ছিল। ০.৯.০+ স্টেবল।
-    implementation("com.google.ai.client.generativeai:generativeai:0.9.1")
-
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
     /* -------- Image Loading -------- */
     implementation("io.coil-kt:coil-compose:2.6.0")
 
