@@ -37,7 +37,7 @@ fun AppNavigation() {
                 onNavigateToTools = { navController.navigate("tools") },
                 onNavigateToEditor = { navController.navigate("editor") },
                 onNavigateToCv = { 
-                     // CV ফিচারটি পরে যোগ করা হবে, আপাতত টোস্ট দেখানো হচ্ছে
+                     // CV ফিচারটি পরে যোগ করা হবে
                      Toast.makeText(context, "CV Maker Coming Soon!", Toast.LENGTH_SHORT).show()
                 },
                 onNavigateToMyPdfs = { navController.navigate("files") },
@@ -45,9 +45,9 @@ fun AppNavigation() {
                 onNavigateToPro = { 
                      Toast.makeText(context, "Premium Feature!", Toast.LENGTH_SHORT).show() 
                 },
-                // আগে এখানে টোস্ট ছিল, এখন এটি "ai_text" রুটে নিয়ে যাবে
+                // AI স্ক্রিনে যাওয়ার জন্য রুট সেট করা হলো
                 onNavigateToAi = { 
-                     navController.navigate("ai_text") 
+                     navController.navigate("ai_screen") 
                 }
             )
         }
@@ -75,10 +75,10 @@ fun AppNavigation() {
         composable("settings") {
             SettingsScreen(onBack = { navController.popBackStack() })
         }
-        
-        // ৬. এআই টেক্সট স্ক্রিন (AI Text Screen) - নতুন যোগ করা হয়েছে
-        composable("ai_text") {
-            // আপনার ফাইলের নাম যদি AiTextScreen হয়, তাহলে ফাংশনটির নামও AiTextScreen হওয়ার কথা
+
+        // ৬. এআই স্ক্রিন (AI Screen) - নতুন সংযোজন
+        composable("ai_screen") {
+            // AiTextScreen কল করা হচ্ছে
             AiTextScreen(onBack = { navController.popBackStack() })
         }
     }
