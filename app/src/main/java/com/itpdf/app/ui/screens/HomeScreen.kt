@@ -61,7 +61,8 @@ fun HomeScreen(
                 ActionCard(
                     title = "PDF Editor",
                     subtitle = "Create & Edit with Images/Text",
-                    icon = Icons.Default.EditDocument,
+                    // ফিক্স: EditDocument এর বদলে Edit ব্যবহার করা হয়েছে যা সব ভার্সনে থাকে
+                    icon = Icons.Default.Edit, 
                     color = MaterialTheme.colorScheme.primaryContainer,
                     onClick = onNavigateToEditor
                 )
